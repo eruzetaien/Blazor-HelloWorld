@@ -1,4 +1,5 @@
 ﻿@page "/movies"
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using BlazorWebAppMovies.Models
@@ -12,7 +13,7 @@
 
 <div>
     <form action="/movies" data-enhance data-permanent>
-        <input type="search" name="titleFilter" />
+        <input type="search" @bind="titleFilter" @bind:event="oninput" />
         <input type="submit" value="Search" />
     </form>
 </div>
@@ -21,11 +22,12 @@
     <a href="movies/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="FilteredMovies">
-    <PropertyColumn Property="movie => movie.Title" />
+<QuickGrid Class="table" Items="FilteredMovies" Pagination="pagination">
+    <PropertyColumn Property="movie => movie.Title" Sortable="true" />
     <PropertyColumn Property="movie => movie.ReleaseDate" Title="Release Date" />
     <PropertyColumn Property="movie => movie.Genre" />
     <PropertyColumn Property="movie => movie.Price" />
+    <PropertyColumn Property="movie => movie.Rating" />
 
     <TemplateColumn Context="movie">
         <a href="@($"movies/edit?id={movie.Id}")">Edit</a> |
@@ -34,14 +36,17 @@
     </TemplateColumn>
 </QuickGrid>
 
+<Paginator State="pagination" />
+
 @code {
     private BlazorWebAppMoviesContext context = default!;
 
-    [SupplyParameterFromQuery]
-    private string? TitleFilter { get; set; }
+    private PaginationState pagination = new PaginationState { ItemsPerPage = 2 };
+
+    private string titleFilter = string.Empty;
 
     private IQueryable<Movie> FilteredMovies =>
-        context.Movie.Where(m => m.Title!.Contains(TitleFilter ?? string.Empty));
+        context.Movie.Where(m => m.Title!.Contains(titleFilter));
 
     protected override void OnInitialized()
     {
