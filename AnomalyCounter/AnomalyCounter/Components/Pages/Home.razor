@@ -1,0 +1,13 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using AnomalyCounter.Components.Components
+@inject IEnumerable<IAnomalyCounter> Counters
+
+<h2>Anomaly Dashboard</h2>
+
+<div class="flex gap-4">
+    @foreach (var counter in Counters)
+    {
+        <AnomalyCard Counter="counter" />
+    }
+</div>

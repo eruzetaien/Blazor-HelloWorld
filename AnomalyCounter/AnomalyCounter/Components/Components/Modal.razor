@@ -1,0 +1,26 @@
+﻿@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? Body { get; set; }
+
+    private void Close()
+    {
+        IsVisibleChanged.InvokeAsync(false);
+    }
+}
+
+@if (IsVisible)
+{
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg w-96">
+            <div class="p-4 border-b flex justify-between">
+                <h2 class="text-lg font-semibold">@Title</h2>
+                <button @onclick="Close" class="text-gray-600 hover:text-gray-800">✕</button>
+            </div>
+            <div class="p-4">
+                @Body
+            </div>
+        </div>
+    </div>
+}
